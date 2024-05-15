@@ -25,4 +25,21 @@ def matrixBitDecomp(A: np.array, l:int):
         bit_decomp_A.append(new_line)
     return np.array(bit_decomp_A)
 
+def invBitDecomp(a, l):
+    k = len(a)//l
+    res = [0 for n in range(k)]
+    for i in range(k):
+        ai = a[l*i:l*i+l]
+        aux = 0
+        for j in range(l):
+            aux += (2**j) * ai[j]
+        res[i] = aux
+    return res
 
+def Powersof2(b, l): #b has length k, l = floor(log2(q)) + 1
+    k = len(b)
+    res = [0 for x in range(k*l)]
+    print(res)
+    for i in range(k):
+        res[i*l:i*l+l] = [(2**j)*b[i] for j in range(l)]
+    return res

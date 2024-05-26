@@ -16,18 +16,18 @@ def dec(l, q, sk, C):
     return int(np.rint(C[l-2]@(v))%q / v[l-2])
 
 # Encodes number "mu" mod q
-def encInt(n,q,xi,m, A, mu):
+def encInt(N, q, l, m, A, mu):
     res = []
     binary = bin(mu)[2:]
     for bit in binary[::-1]:
-        res += [enc(n,q,xi,m, A, int(bit))]
+        res += [enc(N, q, l, m, A, int(bit))]
     return res
 
 #Decodes ciphertext C from message "mu" mod q
-def decInt(n,q,xi,m, sk, Clist):
+def decInt(l, q, sk, Clist):
     res = 0
     i = 0
     for C in Clist:
-        res += dec(n,q,xi,m, sk, C)*(2**i)
+        res += dec(l, q, sk, C)*(2**i)
         i+=1
     return res

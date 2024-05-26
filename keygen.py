@@ -3,14 +3,14 @@ from utils import *
 import numpy as np 
 
 class gswKeys:
-    def __init__(self, lbda, L):
-        self.n, self.k, self.q, self.l, self.m, self.N, self.error_distr = self.setup(lbda, L)
+    def __init__(self, lbda, L, var):
+        self.n, self.k, self.q, self.l, self.m, self.N, self.error_distr = self.setup(lbda, L, var)
         
         self.t,self.sk=self.secret_key_gen()
 
         self.pk=self.public_key_gen()
 
-    def setup(self, lbda, L):
+    def setup(self, lbda, L, var):
         #q with k bits
         #k = O(L log n)
         #n quasi-linear on lambda
@@ -23,12 +23,13 @@ class gswKeys:
 
         def error_distr(size):
             # Step 1: Generate samples from a normal distribution
-            samples = np.random.normal(0, 0.5, size) 
+            samples = np.random.normal(0, var, size)
             
             # Step 2: Compute the absolute value mod q
             modified_values = np.abs(samples) % self.q
             
             return np.rint(modified_values)
+        
         return n,k,q,l,m,N,error_distr
     
     def public_key_gen(self):

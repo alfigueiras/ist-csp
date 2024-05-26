@@ -1,13 +1,12 @@
 from math import floor, log2
 from utils import *
 import numpy as np 
-import random as rand
 
 class gswKeys:
     def __init__(self, lbda, L):
         self.n, self.k, self.q, self.l, self.m, self.N, self.error_distr = self.setup(lbda, L)
         
-        self.t,self.sk,self.v=self.secret_key_gen()
+        self.t,self.sk=self.secret_key_gen()
 
         self.pk=self.public_key_gen()
 
@@ -18,24 +17,29 @@ class gswKeys:
         n=lbda
         k=int(L*log2(n))
         q=2**k #generate q between 2**(k-something) and 2**k
-        l=floor(log2(q))+1
-        m=n*l
+        l=int(np.floor(log2(q))+1)
+        m=(n+1)*l
         N=(n+1)*l
-        error_distr = lambda size : np.rint(np.random.normal(loc=0, scale=q/8, size=size))
+
+        def error_distr(size):
+            # Step 1: Generate samples from a normal distribution
+            samples = np.random.normal(0, 0.5, size) 
+            
+            # Step 2: Compute the absolute value mod q
+            modified_values = np.abs(samples) % self.q
+            
+            return np.rint(modified_values)
         return n,k,q,l,m,N,error_distr
     
     def public_key_gen(self):
         B=np.random.randint(0, self.q, (self.m, self.n), dtype=np.int64)
         errors=self.error_distr(size=self.m).T
-        b=np.matmul(B,self.t)+errors
+        b= (B @ self.t) + errors
         b=b.reshape((-1,1))
         pk=np.hstack((b, B))
-        return pk
+        return pk % self.q
 
     def secret_key_gen(self):
-        t = [-(rand.randint(0,self.q-1)) for j in range(self.n)]
-        sk = [1]+t
-        return t,sk,Powersof2(sk, self.l)
-    
-a=gswKeys(40,10)
-
+        t = np.random.randint(0,self.q,size=self.n, dtype=np.int64)
+        sk = np.concatenate((np.array([1]), -t))
+        return t,sk

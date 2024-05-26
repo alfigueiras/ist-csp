@@ -26,6 +26,7 @@ def matrixBitDecomp(A: np.array, l:int):
     return np.array(bit_decomp_A)
 
 def invBitDecomp(a: np.array, l:int):
+    q = 2**(l-1)
     k = len(a)//l
     res = [0 for n in range(k)]
     for i in range(k):
@@ -34,7 +35,7 @@ def invBitDecomp(a: np.array, l:int):
         for j in range(l):
             aux += (2**j) * ai[j]
         res[i] = aux
-    return np.array(res)
+    return np.array(res)%q
 
 def Powersof2(b: np.array, l:int): #b has length k, l = floor(log2(q)) + 1
     k = len(b)
@@ -55,8 +56,17 @@ def matrixFlatten(A:np.array, l:int):
     """
     flatten_A=[]
     for line in A:
-        print(line)
         new_line=flatten(line, l)
         flatten_A.append(new_line)
-        print(new_line)
     return np.array(flatten_A)
+
+def MultConst(C: np.array, alpha: int, l:int):
+    M_alpha=matrixFlatten(alpha*np.identity(C.shape[0]), l)
+    print(M_alpha)
+    return matrixFlatten(M_alpha@C, l)
+
+def AddCipher(C1: np.array, C2: np.array, l:int):
+    return matrixFlatten(C1+C2,l)
+
+def MultCipher(C1: np.array, C2: np.array, l:int):
+    return matrixFlatten(C1@C2,l)

@@ -62,7 +62,6 @@ def matrixFlatten(A:np.array, l:int):
 
 def MultConst(C: np.array, alpha: int, l:int):
     M_alpha=matrixFlatten(alpha*np.identity(C.shape[0]), l)
-    print(M_alpha)
     return matrixFlatten(M_alpha@C, l)
 
 def AddCipher(C1: np.array, C2: np.array, l:int):

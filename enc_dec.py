@@ -5,7 +5,7 @@ import numpy as np
 #Encodes message "mu" in {0,1}
 def enc(N, q, l, m, A, mu):
     R = np.random.randint(0, 2, (N, m), dtype=np.int64)
-    C = matrixFlatten(mu*np.identity(N) + matrixBitDecomp(R @ A, l), l) % q
+    C = matrixFlatten(mu * np.identity(N) + matrixBitDecomp(R @ A, l), l) % q
     return C
 
 #Decodes ciphertext C from message "mu" in {0,1}
@@ -31,3 +31,17 @@ def decInt(l, q, sk, Clist):
         res += dec(l, q, sk, C)*(2**i)
         i+=1
     return res
+
+def MPDec(l,q,sk,C):
+    v = Powersof2(sk, l) % q
+    bitlist = [0 for i in range(l)]
+    i = l-3
+    bitlist[0] = int(np.rint(C[l-2]@(v))%q / v[l-2])
+    for j in range(1,l):
+        s = sum([bitlist[k]*(2**k)*v[i] for k in range(j)])
+        bitlist[j] = int(np.rint( ((C[i]@(v)) - s)%q / v[l-2]) )
+        i-=1
+    res = 0
+    for j in range(l):
+        res += bitlist[j]*(2**j)
+    return res % q
